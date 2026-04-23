@@ -40,10 +40,10 @@
         }
       ]
     ],
-    "experiments": {
+    "experiments": {    
       "typedRoutes": true,
       "reactCompiler": true,
-      "baseUrl": "/ds151-code-06-navigation"
+      "baseUrl": "/ds881-tmdb-app-github-actions-t"
     }
   }
 }
