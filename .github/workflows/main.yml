@@ -49,10 +49,16 @@ jobs:
         run: echo "EXPO_PUBLIC_TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}" >> .env
 
       - name: Build Expo Web
-        run: npx expo export --platform web
+        run: npx expo export --platform web --output-dir dist
 
       - name: Criar nojekyll
         run: touch ./dist/.nojekyll
+
+      - name: Upload Dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: ./dist
 
   deploy:
     runs-on: ubuntu-latest
