@@ -32,18 +32,21 @@ jobs:
         run: npm test
 
   build:
-    name: Build Expo Web
+    name: Build Expo Web (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
     needs: test
+    strategy:
+      matrix:
+        node-version: ['20', '24']
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
           cache: "npm"
 
       - name: Install dependencies
@@ -61,12 +64,15 @@ jobs:
       - name: Upload Dist
         uses: actions/upload-artifact@v4
         with:
-          name: dist
+          name: dist-${{ matrix.node-version }}
           path: ./dist
 
   deploy:
+    name: Deploy Pages (Node 20)
     runs-on: ubuntu-latest
     needs: build
+    # O deploy geralmente é feito a partir de uma única build estável (Node 20)
+    if: github.ref == 'refs/heads/release'
 
     permissions:
       contents: read
@@ -77,7 +83,7 @@ jobs:
       - name: Carregar Dist
         uses: actions/download-artifact@v4
         with:
-          name: dist
+          name: dist-20
           path: ./dist
 
       - name: Configurar pages
@@ -92,18 +98,21 @@ jobs:
         uses: actions/deploy-pages@v4
 
   build-android:
-    name: Build Android
+    name: Build Android (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
     needs: test
+    strategy:
+      matrix:
+        node-version: ['20', '24']
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
           cache: "npm"
 
       - name: Setup Java 17
@@ -133,25 +142,26 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-release
+          name: app-release-${{ matrix.node-version }}
           path: android/app/build/outputs/apk/release/app-release.apk
 
   release:
-    name: Create Release
+    name: Create Release (Node 20)
     runs-on: ubuntu-latest
     needs: build-android
+    if: github.ref == 'refs/heads/release'
 
     steps:
       - name: Download APK
         uses: actions/download-artifact@v4
         with:
-          name: app-release
+          name: app-release-20
 
       - name: Create Release with APK
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ github.run_number }}
           name: Release v${{ github.run_number }}
-          files: ./app-release/app-release.apk
+          files: ./app-release.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
