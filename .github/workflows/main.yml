@@ -40,6 +40,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set Short SHA
+        id: vars
+        run: echo "sha_short=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
+
       - name: Setup Node.js 24
         uses: actions/setup-node@v4
         with:
@@ -57,6 +61,11 @@ jobs:
 
       - name: Criar nojekyll
         run: touch ./dist/.nojekyll
+
+      - name: Build Docker Image
+        run: |
+          docker build -t tmdb-app:${{ steps.vars.outputs.sha_short }} .
+          docker tag tmdb-app:${{ steps.vars.outputs.sha_short }} tmdb-app:latest
 
       - name: Upload Dist
         uses: actions/upload-artifact@v4
