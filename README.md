@@ -194,3 +194,21 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+#### 📦 Como utilizar a imagem (Docker Hub):
+
+Para validar ou rodar o projeto localmente via Docker, basta utilizar o repositório público **lyppe1201/tmdb-app**.
+
+1. **Baixar a versão mais recente:**
+   ```bash
+   docker pull lyppe1201/tmdb-app:latest
+   ```
+
+2. **Executar o container:**
+   ```bash
+   docker run -d -p 8080:80 --name tmdb-app lyppe1201/tmdb-app:latest
+   ```
+   *Após rodar, a aplicação estará disponível em `localhost:8080`.*
+
+3. **Rastreabilidade:**
+   Caso precise testar uma versão específica de um commit, substitua `latest` pelos 7 caracteres iniciais do SHA do commit correspondente.
