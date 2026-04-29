@@ -40,6 +40,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Set Short SHA
+        id: vars
+        run: echo "sha_short=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
       - name: Setup Node.js 24
         uses: actions/setup-node@v4
         with:
@@ -65,7 +68,9 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tmdb-app:latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/tmdb-app:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/tmdb-app:${{ steps.vars.outputs.sha_short }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Upload Dist
